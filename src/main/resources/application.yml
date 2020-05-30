@@ -1,0 +1,3 @@
+spring.data.mongodb.uri: mongodb+srv://awesome-app-bff-admin:VlHeLyvqXY4hp2qu@test-orvxq.mongodb.net/awesome-app-bff
+spring.session.store-type: mongodb
+server.port: 80
