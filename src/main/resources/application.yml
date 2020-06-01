@@ -1,3 +1,4 @@
 spring.data.mongodb.uri: mongodb+srv://awesome-app-bff-admin:VlHeLyvqXY4hp2qu@test-orvxq.mongodb.net/awesome-app-bff
 spring.session.store-type: mongodb
 server.port: 80
+users.api.url: http://prodvpc-1579985954.eu-central-1.elb.amazonaws.com:8081/api/v1/users
