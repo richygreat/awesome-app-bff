@@ -26,7 +26,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String usersApiUrl = environment.getProperty("user.api.url") + "/" + username;
+        String usersApiUrl = environment.getProperty("users.api.url") + "/" + username;
         log.info("loadUserByUsername: usersApiUrl: {}", usersApiUrl);
         ResponseEntity<UserModel> userResponseEntity = restTemplate.getForEntity(usersApiUrl, UserModel.class);
         if (userResponseEntity.getStatusCode() == HttpStatus.OK && userResponseEntity.getBody() != null) {
