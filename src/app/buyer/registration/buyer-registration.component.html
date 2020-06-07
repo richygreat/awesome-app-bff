@@ -1,0 +1,38 @@
+<div class="basic-container">
+    <mat-card class="form-card">
+        <div class="mat-card-header">
+            <div class="mat-card-title">Registration</div>
+        </div>
+        <form (ngSubmit)="submit()" [formGroup]="buyerForm" autocomplete="off">
+            <mat-card-content>
+                <mat-form-field appearance="outline" class="form-full-width">
+                    <mat-label>Email</mat-label>
+                    <input [errorStateMatcher]="matcher" formControlName="emailAddress"
+                           matInput placeholder="jane.doe@example.com">
+                    <mat-hint>Enter your email address</mat-hint>
+                    <mat-error *ngIf="emailAddress.hasError('email') && !emailAddress.hasError('required')">
+                        Please enter a valid email address
+                    </mat-error>
+                    <mat-error *ngIf="emailAddress.hasError('required')">
+                        Email address is <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="form-full-width">
+                    <mat-label>Password</mat-label>
+                    <input [errorStateMatcher]="matcher" formControlName="password"
+                           matInput type="password">
+                    <mat-hint>Enter a strong password</mat-hint>
+                    <mat-error *ngIf="password.hasError('required')">
+                        Password is <strong>required</strong>
+                    </mat-error>
+                </mat-form-field>
+            </mat-card-content>
+            <mat-card-actions style="margin: 0">
+                <button [disabled]="!buyerForm.valid" color="primary" mat-raised-button type="submit">
+                    Register
+                </button>
+            </mat-card-actions>
+        </form>
+    </mat-card>
+</div>

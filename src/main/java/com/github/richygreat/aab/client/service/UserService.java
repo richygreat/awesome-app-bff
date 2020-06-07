@@ -1,6 +1,6 @@
-package com.github.richygreat.aab.config;
+package com.github.richygreat.aab.client.service;
 
-import lombok.Data;
+import com.github.richygreat.aab.client.model.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -13,8 +13,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,24 +24,26 @@ public class UserService implements UserDetailsService {
     private final Environment environment;
     private final RestTemplate restTemplate;
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String usersApiUrl = environment.getProperty("users.api.url") + "/" + username;
-        log.info("loadUserByUsername: usersApiUrl: {}", usersApiUrl);
-        ResponseEntity<UserModel> userResponseEntity = restTemplate.getForEntity(usersApiUrl, UserModel.class);
+    public UserDto createUser(UserDto userDto) {
+        String usersApiUrl = environment.getRequiredProperty("users.api.url");
+        log.info("createUser: usersApiUrl: {} userDto: {}", usersApiUrl, userDto);
+        ResponseEntity<UserDto> userResponseEntity = restTemplate.postForEntity(usersApiUrl, userDto, UserDto.class);
         if (userResponseEntity.getStatusCode() == HttpStatus.OK && userResponseEntity.getBody() != null) {
-            UserModel userModel = userResponseEntity.getBody();
-            return new User(userModel.getUsername(), userModel.getPassword(),
-                    userModel.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+            return userResponseEntity.getBody();
         }
-        throw new UsernameNotFoundException(username);
+        throw new ResponseStatusException(userResponseEntity.getStatusCode(), "User creation failed");
     }
 
-    @Data
-    private static class UserModel {
-        private String id;
-        private String username;
-        private String password;
-        private List<String> roles;
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        String usersApiUrl = environment.getRequiredProperty("users.api.url") + "/" + username;
+        log.info("loadUserByUsername: usersApiUrl: {}", usersApiUrl);
+        ResponseEntity<UserDto> userResponseEntity = restTemplate.getForEntity(usersApiUrl, UserDto.class);
+        if (userResponseEntity.getStatusCode() == HttpStatus.OK && userResponseEntity.getBody() != null) {
+            UserDto userDto = userResponseEntity.getBody();
+            return new User(userDto.getUsername(), userDto.getPassword(),
+                    userDto.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+        }
+        throw new UsernameNotFoundException(username);
     }
 }
